@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Since Andrew Gower Last Tweeted</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        #timer {
+            font-size: 2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div id="timer">Loading...</div>
+
+<script>
+    function updateTimer() {
+        const lastTweetTime = new Date('June 20, 2024 16:28:00 UTC+2');
+        const now = new Date();
+        const elapsed = now - lastTweetTime;
+
+        const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+
+        document.getElementById('timer').innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s since Andrew Gower last tweeted.`;
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+</script>
+</body>
+</html>
