@@ -7,6 +7,7 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -14,31 +15,61 @@
             background-color: #f4f4f4;
         }
 
-        #timer {
+        .timer {
             font-size: 2em;
             color: #333;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-<div id="timer">Loading...</div>
+<div id="q3StartTimer" class="timer">Loading...</div>
+<div id="q3EndTimer" class="timer">Loading...</div>
+<div id="lastTweetTimer" class="timer">Loading...</div>
+<div id="twitter-embed"></div>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <script>
-    function updateTimer() {
-        const lastTweetTime = new Date('June 20, 2024 16:28:00 UTC+2');
-        const now = new Date();
-        const elapsed = now - lastTweetTime;
+    fetch('https://server-wild-flower-1314.fly.dev').then((response) => response.json()).then((data) => {
+        document.querySelector('#twitter-embed').innerHTML = data.embed;
 
-        const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+        function updateTimer() {
+            const now = new Date();
 
-        document.getElementById('timer').innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s since Andrew Gower last tweeted.`;
-    }
+            // Last tweet time
+            const lastTweetTime = new Date(data.dateTime); //new Date('June 20, 2024 16:28:00 UTC+2');
+            const elapsed = now - lastTweetTime;
+            const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+            document.getElementById('lastTweetTimer').innerHTML =
+                `${days}d ${hours}h ${minutes}m ${seconds}s since Andrew Gower last tweeted.`;
 
-    updateTimer();
-    setInterval(updateTimer, 1000);
+            // Q3 start time
+            const q3StartTime = new Date('July 1, 2024 00:00:00 UTC');
+            const timeUntilQ3Start = q3StartTime - now;
+            const q3StartDays = Math.floor(timeUntilQ3Start / (1000 * 60 * 60 * 24));
+            const q3StartHours = Math.floor((timeUntilQ3Start % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const q3StartMinutes = Math.floor((timeUntilQ3Start % (1000 * 60 * 60)) / (1000 * 60));
+            const q3StartSeconds = Math.floor((timeUntilQ3Start % (1000 * 60)) / 1000);
+            document.getElementById('q3StartTimer').innerHTML =
+                `${q3StartDays}d ${q3StartHours}h ${q3StartMinutes}m ${q3StartSeconds}s until Q3 starts.`;
+
+            // Q3 end time
+            const q3EndTime = new Date('September 30, 2024 23:59:59 UTC');
+            const timeUntilQ3End = q3EndTime - now;
+            const q3EndDays = Math.floor(timeUntilQ3End / (1000 * 60 * 60 * 24));
+            const q3EndHours = Math.floor((timeUntilQ3End % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const q3EndMinutes = Math.floor((timeUntilQ3End % (1000 * 60 * 60)) / (1000 * 60));
+            const q3EndSeconds = Math.floor((timeUntilQ3End % (1000 * 60)) / 1000);
+            document.getElementById('q3EndTimer').innerHTML =
+                `${q3EndDays}d ${q3EndHours}h ${q3EndMinutes}m ${q3EndSeconds}s until Q3 ends.`;
+        }
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    });
 </script>
 </body>
 </html>
