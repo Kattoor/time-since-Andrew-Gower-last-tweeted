@@ -26,14 +26,17 @@
 <div id="q3StartTimer" class="timer">Loading...</div>
 <div id="q3EndTimer" class="timer">Loading...</div>
 <div id="lastTweetTimer" class="timer">Loading...</div>
+<div id="lastChecked"></div>
 <div id="twitter-embed"></div>
-<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<script id="scr" src="https://platform.twitter.com/widgets.js"></script>
 
 <script>
-    fetch('https://server-wild-flower-1314.fly.dev').then((response) => response.json()).then((data) => {
-        document.querySelector('#twitter-embed').innerHTML = data.embed;
+    let previousEmbed = null;
 
-        function updateTimer() {
+    function updateTimer() {
+        fetch('https://server-wild-flower-1314.fly.dev').then((response) => response.json()).then((data) => {
+            document.querySelector('#lastChecked').innerHTML = 'Last checked ' + Math.round((Date.now() - new Date(data.lastChecked)) / 1000) + ' second(s) ago';
+
             const now = new Date();
 
             // Last tweet time
@@ -65,11 +68,22 @@
             const q3EndSeconds = Math.floor((timeUntilQ3End % (1000 * 60)) / 1000);
             document.getElementById('q3EndTimer').innerHTML =
                 `${q3EndDays}d ${q3EndHours}h ${q3EndMinutes}m ${q3EndSeconds}s until Q3 ends.`;
-        }
 
-        updateTimer();
-        setInterval(updateTimer, 1000);
-    });
+            if (data.embed !== previousEmbed) {
+                document.querySelector('#twitter-embed').innerHTML = data.embed;
+                const oldScript = document.getElementById('scr');
+                oldScript.parentNode.removeChild(oldScript);
+                const newScript = document.createElement('script');
+                newScript.id = 'scr';
+                newScript.src = 'https://platform.twitter.com/widgets.js';
+                document.body.appendChild(newScript);
+                previousEmbed = data.embed;
+            }
+        });
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
 </script>
 </body>
 </html>
