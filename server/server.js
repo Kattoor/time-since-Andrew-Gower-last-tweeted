@@ -1,112 +1,11 @@
 const http = require('http');
-const readline = require('readline');
+const fs = require('fs');
 
 const puppeteer = require('puppeteer');
 
 async function getTweetData() {
     const browser = await puppeteer.launch({headless: true, args: ['--no-sandbox']});
     const page = await browser.newPage();
-
-    const username = '';
-    const password = '';
-
-    async function logIn() {
-        await page.goto('https://x.com/i/flow/login', {waitUntil: 'networkidle0'});
-
-        await page.waitForSelector('input[type="text"]', {visible: true});
-        await page.type('input[name="text"]', username);
-
-        await page.evaluate(() => {
-            const buttons = document.querySelectorAll('button:has(div>span>span)');
-            for (let button of buttons) {
-                const span = button.querySelector('div > span > span');
-                if (span.innerText === 'Next') {
-                    button.click();
-                    return;
-                }
-            }
-        });
-
-        const inputElement = await page.waitForSelector('input', {visible: true});
-        const inputName = await (await inputElement.getProperty('name')).jsonValue();
-
-        if (inputName === 'text') {
-            await page.type('input[name="text"]', '');
-            await page.click('button[data-testid="ocfEnterTextNextButton"]');
-        }
-
-        await fillInPassword();
-    }
-
-    async function fillInPassword() {
-        await page.waitForSelector('input[type="password"]', {visible: true});
-        await page.type('input[name="password"]', password);
-        await Promise.all([
-            //page.waitForNavigation(),
-            page.click('button[data-testid="LoginForm_Login_Button"]')
-        ]);
-
-        const confirmationCodeRequiredSelector = 'a[href="https://help.twitter.com/managing-your-account/additional-information-request-at-login"]';
-        await Promise.race([
-            page.waitForSelector(confirmationCodeRequiredSelector),
-            page.waitForNavigation()
-        ]);
-
-        if (await page.$(confirmationCodeRequiredSelector)) {
-            const confirmationCode = await getConfirmationCode();
-            /*const confirmationCode = 'n7y4hgwr';*//*await new Promise((resolve) => {
-                const rl = readline.createInterface(process.stdin, process.stdout);
-                rl.setPrompt('Confirmation code > ');
-                rl.on('line', (line) => {
-                    rl.close();
-                    resolve(line);
-                });
-            });*/
-            await page.type('input[name="text"]', confirmationCode);
-            await Promise.all([
-                page.waitForNavigation(),
-                page.click('button[data-testid="ocfEnterTextNextButton"]')
-            ]);
-        }
-    }
-
-    async function getConfirmationCode() {
-        const newPage = await browser.newPage();
-
-        const emailUsername = '';
-        const emailPassword = '';
-
-        await newPage.goto('https://gmail.com', {waitUntil: 'networkidle0'});
-
-        await newPage.waitForSelector('input[type="email"]', {visible: true});
-        await newPage.type('input[type="email"]', emailUsername);
-        const buttonSelector = 'div[data-primary-action-label="Next"]>div>div:nth-child(1) button';
-        await newPage.click(buttonSelector);
-
-        await newPage.waitForSelector('input[type="password"]', {visible: true});
-        await newPage.type('input[type="password"]', emailPassword);
-        await newPage.click(buttonSelector);
-
-        const continueButtonSelector = 'div[data-primary-action-label="Continue"]>div>div:nth-child(2) button';
-        const firstRowSelector = 'div#\\:\\33>div#\\:\\31>div table tr td#\\:\\31u>div>div>div:nth-child(1) span span';
-
-        await Promise.race([
-            newPage.waitForSelector(continueButtonSelector),
-            newPage.waitForSelector(firstRowSelector)
-        ]);
-
-        if (await newPage.$(continueButtonSelector)) {
-            await Promise.all([
-                newPage.waitForNavigation(),
-                newPage.click(continueButtonSelector)
-            ]);
-        }
-
-        const firstRow = await newPage.waitForSelector(firstRowSelector);
-        const result = await firstRow.evaluate((row) => row.innerText.split(' ').slice(-1)[0]);
-        await newPage.close();
-        return result;
-    }
 
     async function scrapeTweets() {
         await page.goto('https://x.com/AndrewCGower', {waitUntil: 'networkidle2'});
@@ -135,7 +34,9 @@ async function getTweetData() {
         return codeText;
     }
 
-    await logIn();
+    //await logIn();
+    const cookies = [{name: 'auth_token', value: '', domain: 'x.com'}];
+    await page.setCookie(...cookies);
     const lastTweet = await scrapeTweets();
     const embed = await getEmbed(lastTweet.id);
     await browser.close();
@@ -148,10 +49,43 @@ async function getTweetData() {
 
     http.createServer((req, res) => {
         const headers = {
-            'Access-Control-Allow-Origin': '*', /* @dev First, read about security */
+            'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS, GET',
-            'Access-Control-Max-Age': 2592000, // 30 days
+            'Access-Control-Max-Age': 2592000
         };
+
+        if (req.url === '/oembed') {
+            res.write(JSON.stringify({
+                "version": "1.0",
+                "type": "rich",
+                "title": "Time Since Andrew Gower Last Tweeted",
+                "html": "<a href='https://timesinceandrewgowerlasttweeted.com'>View Andrew's last tweet!</a>",
+                "author_name": "Andrew Gower",
+                "provider_name": "Time Since Andrew Gower Last Tweeted",
+                "thumbnail_url": "https://timesinceandrewgowerlasttweeted.com/mawchest.png",
+                "thumbnail_width": 600,
+                "thumbnail_height": 400
+            }));
+            res.end();
+            return;
+        }
+
+        if (req.url === '/index.html') {
+            const now = Date.now();
+            const q3StartTime = new Date('July 1, 2024 00:00:00 UTC');
+            const timeUntilQ3Start = q3StartTime - now;
+            const q3StartDays = Math.floor(timeUntilQ3Start / (1000 * 60 * 60 * 24));
+            const q3StartHours = Math.floor((timeUntilQ3Start % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const q3StartMinutes = Math.floor((timeUntilQ3Start % (1000 * 60 * 60)) / (1000 * 60));
+            const q3StartSeconds = Math.floor((timeUntilQ3Start % (1000 * 60)) / 1000);
+            const timeUntilQ3Starts = `${q3StartDays}d ${q3StartHours}h ${q3StartMinutes}m ${q3StartSeconds}s until Q3 starts.`;
+
+            const html = fs.readFileSync('./index.html', 'utf-8');
+            const toReplace = "View Andrew's last tweet!";
+            res.write(html.replace(toReplace, timeUntilQ3Starts));
+            res.end();
+            return;
+        }
 
         if (req.method === 'OPTIONS') {
             res.writeHead(204, headers);
@@ -173,5 +107,5 @@ async function getTweetData() {
         dateTime = tweetData.dateTime;
         embed = tweetData.embed;
         lastChecked = new Date();
-    }, 60000);
+    }, 60000 * 5);
 })();
