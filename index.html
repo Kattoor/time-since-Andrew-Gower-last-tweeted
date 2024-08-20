@@ -92,16 +92,16 @@
         document.getElementById('lastTweetTimer').innerHTML =
             `${days}d ${hours}h ${minutes}m ${seconds}s since Andrew Gower last tweeted.`;
 
-        const q3StartTime = new Date('July 1, 2024 00:00:00 UTC');
-        const timeUntilQ3Start = q3StartTime - now;
+        const q3StartTime = new Date(2024, 6, 1, 0, 0, 0, 0);
+        const timeUntilQ3Start = now - q3StartTime;
         const q3StartDays = Math.floor(timeUntilQ3Start / (1000 * 60 * 60 * 24));
         const q3StartHours = Math.floor((timeUntilQ3Start % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const q3StartMinutes = Math.floor((timeUntilQ3Start % (1000 * 60 * 60)) / (1000 * 60));
         const q3StartSeconds = Math.floor((timeUntilQ3Start % (1000 * 60)) / 1000);
         document.getElementById('q3StartTimer').innerHTML =
-            `${q3StartDays}d ${q3StartHours}h ${q3StartMinutes}m ${q3StartSeconds}s until Q3 starts.`;
+            `${q3StartDays}d ${q3StartHours}h ${q3StartMinutes}m ${q3StartSeconds}s since Q3 started.`;
 
-        const q3EndTime = new Date('September 30, 2024 23:59:59 UTC');
+        const q3EndTime = new Date(2024, 9, 1, 0, 0, 0, 0)
         const timeUntilQ3End = q3EndTime - now;
         const q3EndDays = Math.floor(timeUntilQ3End / (1000 * 60 * 60 * 24));
         const q3EndHours = Math.floor((timeUntilQ3End % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
