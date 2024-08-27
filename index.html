@@ -61,7 +61,8 @@
     <div id="left"></div>
     <div id="container">
         <div id="q3StartTimer" class="timer">Loading...</div>
-        <div id="q3EndTimer" class="timer">Loading...</div>
+        <s><div id="q3EndTimer" class="timer">Loading...</div></s>
+        <div id="nov5Timer" class="timer">Loading...</div>
         <div id="lastTweetTimer" class="timer">Loading...</div>
         <div id="twitter-embed"></div>
     </div>
@@ -109,6 +110,15 @@
         const q3EndSeconds = Math.floor((timeUntilQ3End % (1000 * 60)) / 1000);
         document.getElementById('q3EndTimer').innerHTML =
             `${q3EndDays}d ${q3EndHours}h ${q3EndMinutes}m ${q3EndSeconds}s until Q3 ends.`;
+
+        const nov5 = new Date(2024, 10, 5, 0, 0, 0, 0);
+        const timeUntilNov5 = nov5 - now;
+        const nov5Days = Math.floor(timeUntilNov5 / (1000 * 60 * 60 * 24));
+        const nov5Hours = Math.floor((timeUntilNov5 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const nov5Minutes = Math.floor((timeUntilNov5 % (1000 * 60 * 60)) / (1000 * 60));
+        const nov5Seconds = Math.floor((timeUntilNov5 % (1000 * 60)) / 1000);
+        document.getElementById('nov5Timer').innerHTML =
+            `${nov5Days}d ${nov5Hours}h ${nov5Minutes}m ${nov5Seconds}s until November 5.`;
 
         if (data.embed !== previousEmbed) {
             document.querySelector('#twitter-embed').innerHTML = data.embed;
