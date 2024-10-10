@@ -63,6 +63,7 @@
         <div id="q3StartTimer" class="timer">Loading...</div>
         <s><div id="q3EndTimer" class="timer">Loading...</div></s>
         <s><div id="nov5Timer" class="timer">Loading...</div></s>
+        <div id="closedBetaTimer" class=timer">Loading...</div>
         <div id="nov6Timer" class="timer">Loading...</div>
         <div id="lastTweetTimer" class="timer">Loading...</div>
         <div id="twitter-embed"></div>
@@ -112,6 +113,15 @@
         document.getElementById('q3EndTimer').innerHTML =
             `${q3EndDays}d ${q3EndHours}h ${q3EndMinutes}m ${q3EndSeconds}s until Q3 ends.`;
 
+        const closedBeta = new Date(2024, 9, 22, 0, 0, 0, 0);
+        const timeUntilClosedBeta = closedBeta - now;
+        const closedBetaDays = Math.floor(timeUntilClosedBeta / (1000 * 60 * 60 * 24));
+        const closedBetaHours = Math.floor((timeUntilClosedBeta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const closedBetaMinutes = Math.floor((timeUntilClosedBeta % (1000 * 60 * 60)) / (1000 * 60));
+        const closedBetaSeconds = Math.floor((timeUntilClosedBeta % (1000 * 60)) / 1000);
+        document.getElementById('closedBetaTimer').innerHTML =
+            `${closedBetaDays}d ${closedBetaHours}h ${closedBetaMinutes}m ${closedBetaSeconds}s until Closed Beta.`;
+        
         const nov5 = new Date(2024, 10, 5, 0, 0, 0, 0);
         const timeUntilNov5 = nov5 - now;
         const nov5Days = Math.floor(timeUntilNov5 / (1000 * 60 * 60 * 24));
