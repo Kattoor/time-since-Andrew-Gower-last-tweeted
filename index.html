@@ -105,23 +105,23 @@
             `${q3StartDays}d ${q3StartHours}h ${q3StartMinutes}m ${q3StartSeconds}s since Q3 started.`;
 
         const q3EndTime = new Date(2024, 9, 1, 0, 0, 0, 0)
-        const timeUntilQ3End = q3EndTime - now;
+        const timeUntilQ3End = now - q3EndTime;
         const q3EndDays = Math.floor(timeUntilQ3End / (1000 * 60 * 60 * 24));
         const q3EndHours = Math.floor((timeUntilQ3End % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const q3EndMinutes = Math.floor((timeUntilQ3End % (1000 * 60 * 60)) / (1000 * 60));
         const q3EndSeconds = Math.floor((timeUntilQ3End % (1000 * 60)) / 1000);
         document.getElementById('q3EndTimer').innerHTML =
-            `${q3EndDays}d ${q3EndHours}h ${q3EndMinutes}m ${q3EndSeconds}s until Q3 ends.`;
+            `${q3EndDays}d ${q3EndHours}h ${q3EndMinutes}m ${q3EndSeconds}s since Q3 ended.`;
 
         const closedBeta = new Date(2024, 9, 22, 0, 0, 0, 0);
-        const timeUntilClosedBeta = closedBeta - now;
+        const timeUntilClosedBeta = now - closedBeta;
         const closedBetaDays = Math.floor(timeUntilClosedBeta / (1000 * 60 * 60 * 24));
         const closedBetaHours = Math.floor((timeUntilClosedBeta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const closedBetaMinutes = Math.floor((timeUntilClosedBeta % (1000 * 60 * 60)) / (1000 * 60));
         const closedBetaSeconds = Math.floor((timeUntilClosedBeta % (1000 * 60)) / 1000);
         document.getElementById('closedBetaTimer').innerHTML =
-            `${closedBetaDays}d ${closedBetaHours}h ${closedBetaMinutes}m ${closedBetaSeconds}s until Closed Beta.`;
-        
+            `${closedBetaDays}d ${closedBetaHours}h ${closedBetaMinutes}m ${closedBetaSeconds}s since Closed Beta started.`;
+
         const nov5 = new Date(2024, 10, 5, 0, 0, 0, 0);
         const timeUntilNov5 = nov5 - now;
         const nov5Days = Math.floor(timeUntilNov5 / (1000 * 60 * 60 * 24));
