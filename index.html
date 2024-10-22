@@ -24,53 +24,60 @@
         }
 
         #container {
-            flex: 1;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             font-family: Arial, sans-serif;
+            color: white;
+            z-index: 1;
         }
 
         .timer {
             font-size: 2em;
-            color: #333;
             margin: 10px 0;
         }
 
-        #top, #bottom, #left, #right {
-            background-image: url('mawchest.png');
-            background-repeat: round;
+        /* Snow start */
+        /* https://github.com/hyperstown/pure-snow.js/blob/master/style.css */
+        body {
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            overflow-x: hidden;
+            overflow-y: hidden;
+            color: white;
         }
 
-        #top, #bottom {
-            flex-basis: 67px;
-            flex-shrink: 0;
-            width: 100vw;
+        .snowflake {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: url('mawchest.png') no-repeat;
+            /* Workaround for Chromium's selective color inversion */
+            border-radius: 50%;
+            filter: drop-shadow(0 0 10px white);
         }
 
-        #left, #right {
-            flex-basis: 50px;
-            flex-shrink: 0;
+        #snow {
+            position: absolute;
+            top: -20vh;
+            height: 120vh;
         }
+        /* Snow end */
     </style>
 </head>
 <body>
-<div id="top"></div>
-<div id="middle">
-    <div id="left"></div>
-    <div id="container">
-        <s><div id="q3StartTimer" class="timer">Loading...</div></s>
-        <s><div id="q3EndTimer" class="timer">Loading...</div></s>
-        <s><div id="nov5Timer" class="timer">Loading...</div></s>
-        <div id="closedBetaTimer" class="timer">Loading...</div>
-        <div id="nov6Timer" class="timer">Loading...</div>
-        <div id="lastTweetTimer" class="timer">Loading...</div>
-        <div id="twitter-embed"></div>
-    </div>
-    <div id="right"></div>
+<div id="snow" data-count="400"></div>
+<div id="container">
+    <s><div id="q3StartTimer" class="timer">Loading...</div></s>
+    <s><div id="q3EndTimer" class="timer">Loading...</div></s>
+    <s><div id="nov5Timer" class="timer">Loading...</div></s>
+    <div id="closedBetaTimer" class="timer">Loading...</div>
+    <div id="nov6Timer" class="timer">Loading...</div>
+    <div id="lastTweetTimer" class="timer">Loading...</div>
+    <div id="twitter-embed"></div>
 </div>
-<div id="bottom"></div>
 
 <script id="scr" src="https://platform.twitter.com/widgets.js"></script>
 
@@ -124,5 +131,112 @@
     updateTimer();
     setInterval(updateTimer, 1000);
 </script>
+
+<!-- Snow start -->
+<!-- https://github.com/hyperstown/pure-snow.js/blob/master/pure-snow.js -->
+<script>
+    let snowflakesCount = 200;
+    let baseCSS = ``;
+
+    let bodyHeightPx = null;
+    let pageHeightVh = null;
+
+    function setHeightVariables() {
+        bodyHeightPx = document.body.offsetHeight;
+        pageHeightVh = (120 * bodyHeightPx / window.innerHeight);
+    }
+
+    function getSnowAttributes() {
+        const snowWrapper = document.getElementById('snow');
+        snowflakesCount = Number(snowWrapper?.dataset?.count || snowflakesCount);
+    }
+
+    function generateSnow(snowDensity = 200) {
+        snowDensity -= 1;
+        const snowWrapper = document.getElementById('snow');
+        snowWrapper.innerHTML = '';
+        for (let i = 0; i < snowDensity; i++) {
+            let board = document.createElement('div');
+            board.className = "snowflake";
+            snowWrapper.appendChild(board);
+        }
+    }
+
+    function getOrCreateCSSElement() {
+        let cssElement = document.getElementById("psjs-css");
+        if (cssElement) return cssElement;
+
+        cssElement = document.createElement('style');
+        cssElement.id = 'psjs-css';
+        document.head.appendChild(cssElement);
+        return cssElement;
+    }
+
+    function addCSS(rule) {
+        const cssElement = getOrCreateCSSElement();
+        cssElement.innerHTML = rule;
+        document.head.appendChild(cssElement);
+    }
+
+    function randomInt(value = 100) {
+        return Math.floor(Math.random() * value) + 1;
+    }
+
+    function randomIntRange(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getRandomArbitrary(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    function generateSnowCSS(snowDensity = 200) {
+        let snowflakeName = "snowflake";
+        let rule = baseCSS;
+
+        for (let i = 1; i < snowDensity; i++) {
+            let randomX = Math.random() * 100; // vw
+            let randomOffset = Math.random() * 10 // vw;
+            let randomXEnd = randomX + randomOffset;
+            let randomXEndYoyo = randomX + (randomOffset / 2);
+            let randomYoyoTime = getRandomArbitrary(0.3, 0.8);
+            let randomYoyoY = randomYoyoTime * pageHeightVh; // vh
+            let randomScale = Math.random();
+            let fallDuration = randomIntRange(10, pageHeightVh / 10 * 3); // s
+            let fallDelay = randomInt(pageHeightVh / 10 * 3) * -1; // s
+            let opacity = Math.random();
+
+            rule += `
+      .${snowflakeName}:nth-child(${i}) {
+        opacity: ${opacity};
+        transform: translate(${randomX}vw, -10px) scale(${randomScale});
+        animation: fall-${i} ${fallDuration}s ${fallDelay}s linear infinite;
+      }
+      @keyframes fall-${i} {
+        ${randomYoyoTime * 100}% {
+          transform: translate(${randomXEnd}vw, ${randomYoyoY}vh) scale(${randomScale});
+        }
+        to {
+          transform: translate(${randomXEndYoyo}vw, ${pageHeightVh}vh) scale(${randomScale});
+        }
+      }
+    `
+        }
+        addCSS(rule);
+    }
+
+    function createSnow() {
+        setHeightVariables();
+        getSnowAttributes();
+        generateSnowCSS(snowflakesCount);
+        generateSnow(snowflakesCount);
+    }
+
+    window.addEventListener('resize', createSnow);
+    window.onload = createSnow;
+</script>
+<!-- Snow end -->
 </body>
 </html>
