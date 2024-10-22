@@ -83,62 +83,28 @@
         fetch('https://server-wild-flower-1314.fly.dev').then((response) => response.json()).then((d) => data = d);
     }
 
-    function updateTimer() {
+    function createTimer(elementId, startTime, untilMessage, afterwardsMessage) {
         const now = new Date();
+        let message = untilMessage;
+        let timeUntil = startTime - now;
+        if (timeUntil < 0) {
+            timeUntil = now - startTime;
+            message = afterwardsMessage;
+        }
+        const days = Math.floor(timeUntil / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeUntil % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeUntil % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeUntil % (1000 * 60)) / 1000);
+        document.getElementById(elementId).innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s ${message}.`;
+    }
 
-        const lastTweetTime = new Date(data.dateTime); //new Date('June 20, 2024 16:28:00 UTC+2');
-        const elapsed = now - lastTweetTime;
-        const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-        document.getElementById('lastTweetTimer').innerHTML =
-            `${days}d ${hours}h ${minutes}m ${seconds}s since Andrew Gower last tweeted.`;
-
-        const q3StartTime = new Date(2024, 6, 1, 0, 0, 0, 0);
-        const timeUntilQ3Start = now - q3StartTime;
-        const q3StartDays = Math.floor(timeUntilQ3Start / (1000 * 60 * 60 * 24));
-        const q3StartHours = Math.floor((timeUntilQ3Start % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const q3StartMinutes = Math.floor((timeUntilQ3Start % (1000 * 60 * 60)) / (1000 * 60));
-        const q3StartSeconds = Math.floor((timeUntilQ3Start % (1000 * 60)) / 1000);
-        document.getElementById('q3StartTimer').innerHTML =
-            `${q3StartDays}d ${q3StartHours}h ${q3StartMinutes}m ${q3StartSeconds}s since Q3 started.`;
-
-        const q3EndTime = new Date(2024, 9, 1, 0, 0, 0, 0)
-        const timeUntilQ3End = now - q3EndTime;
-        const q3EndDays = Math.floor(timeUntilQ3End / (1000 * 60 * 60 * 24));
-        const q3EndHours = Math.floor((timeUntilQ3End % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const q3EndMinutes = Math.floor((timeUntilQ3End % (1000 * 60 * 60)) / (1000 * 60));
-        const q3EndSeconds = Math.floor((timeUntilQ3End % (1000 * 60)) / 1000);
-        document.getElementById('q3EndTimer').innerHTML =
-            `${q3EndDays}d ${q3EndHours}h ${q3EndMinutes}m ${q3EndSeconds}s since Q3 ended.`;
-
-        const closedBeta = new Date(2024, 9, 22, 0, 0, 0, 0);
-        const timeUntilClosedBeta = now - closedBeta;
-        const closedBetaDays = Math.floor(timeUntilClosedBeta / (1000 * 60 * 60 * 24));
-        const closedBetaHours = Math.floor((timeUntilClosedBeta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const closedBetaMinutes = Math.floor((timeUntilClosedBeta % (1000 * 60 * 60)) / (1000 * 60));
-        const closedBetaSeconds = Math.floor((timeUntilClosedBeta % (1000 * 60)) / 1000);
-        document.getElementById('closedBetaTimer').innerHTML =
-            `${closedBetaDays}d ${closedBetaHours}h ${closedBetaMinutes}m ${closedBetaSeconds}s since Closed Beta started.`;
-
-        const nov5 = new Date(2024, 10, 5, 0, 0, 0, 0);
-        const timeUntilNov5 = nov5 - now;
-        const nov5Days = Math.floor(timeUntilNov5 / (1000 * 60 * 60 * 24));
-        const nov5Hours = Math.floor((timeUntilNov5 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const nov5Minutes = Math.floor((timeUntilNov5 % (1000 * 60 * 60)) / (1000 * 60));
-        const nov5Seconds = Math.floor((timeUntilNov5 % (1000 * 60)) / 1000);
-        document.getElementById('nov5Timer').innerHTML =
-            `${nov5Days}d ${nov5Hours}h ${nov5Minutes}m ${nov5Seconds}s until November 5.`;
-
-        const nov6 = new Date(2024, 10, 6, 0, 0, 0, 0);
-        const timeUntilNov6 = nov6 - now;
-        const nov6Days = Math.floor(timeUntilNov6 / (1000 * 60 * 60 * 24));
-        const nov6Hours = Math.floor((timeUntilNov6 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const nov6Minutes = Math.floor((timeUntilNov6 % (1000 * 60 * 60)) / (1000 * 60));
-        const nov6Seconds = Math.floor((timeUntilNov6 % (1000 * 60)) / 1000);
-        document.getElementById('nov6Timer').innerHTML =
-            `${nov6Days}d ${nov6Hours}h ${nov6Minutes}m ${nov6Seconds}s until November 6.`;
+    function updateTimer() {
+        createTimer('lastTweetTimer', new Date(data.dateTime), '', 'since Andrew Gower last tweeted');
+        createTimer('q3StartTimer', new Date(2024, 6, 1, 0, 0, 0, 0), 'until Q3 starts', 'since Q3 started');
+        createTimer('q3EndTimer', new Date(2024, 9, 1, 0, 0, 0, 0), 'until Q3 ends', 'since Q3 ended');
+        createTimer('closedBetaTimer', new Date(2024, 9, 22, 0, 0, 0, 0), 'until Closed Beta starts', 'since Closed Beta started');
+        createTimer('nov5Timer', new Date(2024, 10, 5, 0, 0, 0, 0), 'until November 5', 'since November 5');
+        createTimer('nov6Timer', new Date(2024, 10, 6, 0, 0, 0, 0), 'until November 6', 'since November 6');
 
         if (data.embed !== previousEmbed) {
             document.querySelector('#twitter-embed').innerHTML = data.embed;
