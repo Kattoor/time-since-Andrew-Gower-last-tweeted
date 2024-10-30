@@ -111,7 +111,7 @@
         createTimer('q3EndTimer', new Date(2024, 9, 1, 0, 0, 0, 0), 'until Q3 ends', 'since Q3 ended');
         createTimer('closedBetaTimer', new Date(2024, 9, 22, 0, 0, 0, 0), 'until Closed Beta starts', 'since Closed Beta started');
         createTimer('nov5Timer', new Date(2024, 10, 5, 0, 0, 0, 0), 'until November 5', 'since November 5');
-        createTimer('nov6Timer', new Date(2024, 10, 6, 0, 0, 0, 0), 'until November 6', 'since November 6');
+        createTimer('nov6Timer', new Date(Date.UTC(2024, 10, 6, 12, 0, 0, 0)), 'until Early Access starts', 'since Early Access started');
 
         if (data.embed !== previousEmbed) {
             document.querySelector('#twitter-embed').innerHTML = data.embed;
