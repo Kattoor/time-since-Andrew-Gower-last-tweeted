@@ -105,13 +105,27 @@
         document.getElementById(elementId).innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s ${message}.`;
     }
 
+    function createTimerHours(elementId, startTime, untilMessage, afterwardsMessage) {
+        const now = new Date();
+        let message = untilMessage;
+        let timeUntil = startTime - now;
+        if (timeUntil < 0) {
+            timeUntil = now - startTime;
+            message = afterwardsMessage;
+        }
+        const hours = Math.floor(timeUntil / (1000 * 60 * 60));
+        const minutes = Math.floor((timeUntil % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeUntil % (1000 * 60)) / 1000);
+        document.getElementById(elementId).innerHTML = `${hours}h ${minutes}m ${seconds}s ${message}.`;
+    }
+
     function updateTimer() {
         createTimer('lastTweetTimer', new Date(data.dateTime), '', 'since Andrew Gower last tweeted');
         createTimer('q3StartTimer', new Date(2024, 6, 1, 0, 0, 0, 0), 'until Q3 starts', 'since Q3 started');
         createTimer('q3EndTimer', new Date(2024, 9, 1, 0, 0, 0, 0), 'until Q3 ends', 'since Q3 ended');
         createTimer('closedBetaTimer', new Date(2024, 9, 22, 0, 0, 0, 0), 'until Closed Beta starts', 'since Closed Beta started');
         createTimer('nov5Timer', new Date(2024, 10, 5, 0, 0, 0, 0), 'until November 5', 'since November 5');
-        createTimer('nov6Timer', new Date(Date.UTC(2024, 10, 6, 12, 0, 0, 0)), 'until Early Access starts', 'since Early Access started');
+        createTimerHours('nov6Timer', new Date(Date.UTC(2024, 10, 6, 10, 0, 0, 0)), 'until Early Access starts', 'since Early Access started');
 
         if (data.embed !== previousEmbed) {
             document.querySelector('#twitter-embed').innerHTML = data.embed;
